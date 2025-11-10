@@ -9,8 +9,9 @@
    ?item <- (item-orden (orden-id ?oid) (item-id ?iid) (qty ?q) (estado "pendiente"))
    (producto (item-id ?iid) (precio ?p))
    =>
-   (modify ?orden (total-compra (+ ?total (* ?q ?p))))
-   (modify ?item (estado "procesada"))
+   (bind ?subtotal (* ?q ?p))
+   (modify ?orden (total-compra (+ ?total ?subtotal)))
+   (modify ?item (subtotal ?subtotal) (estado "procesada"))
 )
 
 (defrule marcar_orden_procesada
@@ -34,4 +35,24 @@
    (modify ?prod (stock (- ?s ?q)))
    (printout t "Stock Actualizado: " ?m " (Quedan: " (- ?s ?q) ")" crlf)
    (retract ?item)
+)
+
+;; --- Reglas de Negocio ---
+
+(defrule descuento_asus_mastercard
+   "Aplica 5% de descuento al comprar un portátil Asus con tarjeta Mastercard."
+   (declare (salience 12))
+   ?orden <- (orden-compra (orden-id ?oid) (cliente-id ?cid) (metodo-pago tarjeta-id ?tid) (estado "pendiente") (total-compra ?total))
+   (tarjetacred (tarjeta-id ?tid) (cliente-id ?cid) (grupo mastercard)) 
+   ?item <- (item-orden (orden-id ?oid) (item-id ?iid) (qty ?q) (estado "pendiente"))
+   (producto (item-id ?iid) (tipo-producto computador) (marca asus) (precio ?p) (modelo ?m))
+   =>
+   (bind ?descuento (* (* ?q ?p) 0.05))
+   (bind ?subtotal_con_desc (- (* ?q ?p) ?descuento))
+   (modify ?item (subtotal ?subtotal_con_desc) (estado "descontado"))
+   (modify ?orden (total-compra (+ ?total ?subtotal_con_desc)))
+   (printout t "--- Descuento Aplicado (Orden " ?oid ") ---" crlf)
+   (printout t "Producto: Asus " ?m crlf)
+   (printout t "Descuento del 5% aplicado: $" ?descuento crlf)
+   (printout t "Subtotal actualizado a: $" ?subtotal_con_desc crlf)
 )
