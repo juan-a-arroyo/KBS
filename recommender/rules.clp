@@ -12,6 +12,7 @@
    (bind ?subtotal (* ?q ?p))
    (modify ?orden (total-compra (+ ?total ?subtotal)))
    (modify ?item (subtotal ?subtotal) (estado "procesada"))
+   (printout t "--- Orden " ?oid " ---" crlf)
 )
 
 (defrule marcar_orden_procesada
@@ -21,7 +22,6 @@
    (not (item-orden (orden-id ?oid) (estado "pendiente")))
    =>
    (modify ?orden (estado "procesada"))
-   (printout t "--- Orden " ?oid " ---" crlf)
    (printout t "Total calculado: $" ?total crlf)
 )
 
@@ -55,4 +55,22 @@
    (printout t "Producto: Asus " ?m crlf)
    (printout t "Descuento del 5% aplicado: $" ?descuento crlf)
    (printout t "Subtotal actualizado a: $" ?subtotal_con_desc crlf)
+)
+
+(defrule 12_msi_apple_banorte
+   "Ofrece 12 MSI al comprar cualquier dispositipo de la marca Apple con tarjetas Banorte"
+   (declare (salience 12))
+   ?orden <- (orden-compra (orden-id ?oid) (cliente-id ?cid) (metodo-pago tarjeta-id ?tid) (estado "pendiente") (total-compra ?total))
+   (tarjetacred (tarjeta-id ?tid) (cliente-id ?cid) (banco banorte))
+   ?item <- (item-orden (orden-id ?oid) (item-id ?iid) (qty ?q) (estado "pendiente"))
+   (producto (item-id ?iid) (marca apple) (precio ?p) (modelo ?m))
+   =>
+   (bind ?subtotal (* ?q ?p))
+   (bind ?mensualidad (/ ?subtotal 12))
+   (modify ?orden (total-compra (+ ?total ?subtotal)))
+   (modify ?item (subtotal ?subtotal) (estado "msi-procesada"))
+   (printout t "--- 12 Meses Sin Intereses (Orden " ?oid ") ---" crlf)
+   (printout t "Producto: Apple " ?m crlf)
+   (printout t "Subtotal Aplicado: $" ?subtotal crlf)
+   (printout t "Mensualidad: $" ?mensualidad crlf)
 )
