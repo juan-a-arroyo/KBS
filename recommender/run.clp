@@ -191,9 +191,9 @@
 
 ;; Dispara: NINGUNA regla de promoción.
 (assert
-   (orden-compra (orden-id o-no-promo) (cliente-id c3) (metodo-pago tarjeta-id t5))
-   (item-orden (orden-id o-no-promo) (item-id p107) (qty 1))
-   (item-orden (orden-id o-no-promo) (item-id p343) (qty 1))
+   (orden-compra (orden-id o23) (cliente-id c3) (metodo-pago tarjeta-id t5))
+   (item-orden (orden-id o23) (item-id p107) (qty 1))
+   (item-orden (orden-id o23) (item-id p343) (qty 1))
 )
 
 (run)

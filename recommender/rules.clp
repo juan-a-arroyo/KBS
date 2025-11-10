@@ -27,9 +27,9 @@
 
 (defrule actualizar_stock_por_item
    "Actualiza el stock de un item vendido y lo retira."
-   (declare (salience 8))
+   (declare (salience 7))
    (orden-compra (orden-id ?oid) (estado "procesada"))
-   ?item <- (item-orden (orden-id ?oid) (item-id ?iid) (qty ?q) (estado "procesada"))
+   ?item <- (item-orden (orden-id ?oid) (item-id ?iid) (qty ?q) (estado ?e & "procesada" | "msi-procesada" | "descontado" | "regalo"))
    ?prod <- (producto (item-id ?iid) (modelo ?m) (stock ?s & :(>= ?s ?q)))
    =>
    (modify ?prod (stock (- ?s ?q)))
@@ -216,7 +216,7 @@
    ?orden <- (orden-compra (orden-id ?oid) (cliente-id ?cid) (metodo-pago tarjeta-id ?tid) (estado "pendiente") (total-compra ?total))
    (tarjetacred (tarjeta-id ?tid) (cliente-id ?cid) (banco bbva) (tipo platino))
    ?item <- (item-orden (orden-id ?oid) (item-id ?iid) (qty ?q) (estado "pendiente"))
-   (producto (item-id ?iid) (marca samsung) (tipo-producto "smartphone" | "computador") (modelo ?m) (precio ?p))
+   (producto (item-id ?iid) (marca samsung) (tipo-producto ?tp & smartphone | computador) (modelo ?m) (precio ?p))
    =>
    (bind ?descuento (* (* ?q ?p) 0.05))
    (bind ?subtotal_con_desc (- (* ?q ?p) ?descuento))
@@ -287,9 +287,9 @@
    (declare (salience 11))
    ?orden <- (orden-compra (orden-id ?oid) (estado "pendiente") (total-compra ?total))
    (item-orden (orden-id ?oid) (item-id ?iid-mac))
-   (producto (item-id ?iid-mac) (marca apple) (tipo-producto computador) (modelo "MacBook Pro 14 (M5)" | "MacBook Pro 16 (M3 Max)"))
-   ?item-acc <- (item-orden (orden-id ?oid) (item-id "p342") (qty ?q) (estado "pendiente"))
-   (producto (item-id "p342") (modelo ?m-acc) (precio ?p))
+   (producto (item-id ?iid-mac) (marca apple) (tipo-producto computador) (modelo ?m & "MacBook Pro 14 (M5)" | "MacBook Pro 16 (M3 Max)"))
+   ?item-acc <- (item-orden (orden-id ?oid) (item-id p342) (qty ?q) (estado "pendiente"))
+   (producto (item-id p342) (modelo ?m-acc) (precio ?p))
    =>
    (bind ?descuento (* (* ?q ?p) 0.50))
    (bind ?subtotal_con_desc (- (* ?q ?p) ?descuento))
@@ -336,10 +336,10 @@
    "Ofrece 25% de descuento en el Surface Pen Pro al comprar una Surface Laptop Studio 2."
    (declare (salience 11))
    ?orden <- (orden-compra (orden-id ?oid) (estado "pendiente") (total-compra ?total))
-   (item-orden (orden-id ?oid) (item-id "p211"))
-   (producto (item-id "p211") (modelo "Surface Laptop Studio 2"))
-   ?item-acc <- (item-orden (orden-id ?oid) (item-id "p351") (qty ?q) (estado "pendiente"))
-   (producto (item-id "p351") (modelo "Lápiz Óptico Surface Pen Pro") (precio ?p))
+   (item-orden (orden-id ?oid) (item-id p211))
+   (producto (item-id p211) (modelo "Surface Laptop Studio 2"))
+   ?item-acc <- (item-orden (orden-id ?oid) (item-id p351) (qty ?q) (estado "pendiente"))
+   (producto (item-id p351) (modelo "Lápiz Óptico Surface Pen Pro") (precio ?p))
    =>
    (bind ?descuento (* (* ?q ?p) 0.25))
    (bind ?subtotal_con_desc (- (* ?q ?p) ?descuento))
@@ -353,10 +353,10 @@
    "Ofrece 10% de descuento en el Monitor Portátil OLED 17 al comprar la MSI Creator Z17 HX."
    (declare (salience 11))
    ?orden <- (orden-compra (orden-id ?oid) (estado "pendiente") (total-compra ?total))
-   (item-orden (orden-id ?oid) (item-id "p216"))
-   (producto (item-id "p216") (modelo "Creator Z17 HX"))
-   ?item-acc <- (item-orden (orden-id ?oid) (item-id "p356") (qty ?q) (estado "pendiente"))
-   (producto (item-id "p356") (modelo "Monitor Portátil OLED 17") (precio ?p))
+   (item-orden (orden-id ?oid) (item-id p216))
+   (producto (item-id p216) (modelo "Creator Z17 HX"))
+   ?item-acc <- (item-orden (orden-id ?oid) (item-id p356) (qty ?q) (estado "pendiente"))
+   (producto (item-id p356) (modelo "Monitor Portátil OLED 17") (precio ?p))
    =>
    (bind ?descuento (* (* ?q ?p) 0.10))
    (bind ?subtotal_con_desc (- (* ?q ?p) ?descuento))
@@ -370,7 +370,7 @@
 
 (defrule generar_vale_combo_apple_contado
    "En la compra al contado de una MacBook y un iPhone, 100 pesos en vale por cada 1000 de compra."
-   (declare (salience 1))
+   (declare (salience 8))
    ?orden <- (orden-compra (orden-id ?oid) (cliente-id ?cid) (metodo-pago "efectivo") (estado "procesada") (total-compra ?total & :(> ?total 1000)))
    (exists 
       (item-orden (orden-id ?oid) (item-id ?iid-mac))
@@ -392,7 +392,7 @@
 
 (defrule generar_vale_computador_caro
    "Al comprar un computador de más de 50,000, genera vale de 1000."
-   (declare (salience 1))
+   (declare (salience 8))
    ?orden <- (orden-compra (orden-id ?oid) (cliente-id ?cid) (estado "procesada"))
    (exists 
       (item-orden (orden-id ?oid) (item-id ?iid) (subtotal ?sub & :(> ?sub 50000)))
@@ -407,7 +407,7 @@
 
 (defrule generar_vale_combo_gaming
    "Al comprar un combo de laptop y accesorio gaming, genera vale de 500."
-   (declare (salience 1))
+   (declare (salience 8))
    ?orden <- (orden-compra (orden-id ?oid) (cliente-id ?cid) (estado "procesada"))
    (exists 
       (item-orden (orden-id ?oid) (item-id ?iid-laptop))
