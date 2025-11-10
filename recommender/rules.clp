@@ -2,7 +2,7 @@
 ;; ARCHIVO: rules.clp
 ;; --------------------------------------------------------
 
-(defrule R00a_calcular_subtotal_item
+(defrule calcular_subtotal_item
    "Calcula el total sumando cada item de la orden."
    (declare (salience 10))
    ?orden <- (orden-compra (orden-id ?oid) (estado "procesando") (total-compra ?total))
@@ -13,7 +13,7 @@
    (modify ?item (estado "calculado"))
 )
 
-(defrule R00b_marcar_orden_calculada
+(defrule marcar_orden_calculada
    "Cuando ya no hay items por procesar, marca la orden como 'calculada'."
    (declare (salience 9))
    ?orden <- (orden-compra (orden-id ?oid) (estado "procesando") (total-compra ?total & :(> ?total 0)))
@@ -26,7 +26,7 @@
 
 (defrule actualizar_stock_por_item
    "Actualiza el stock de un item vendido y lo retira."
-   (declare (salience -10))
+   (declare (salience 8))
    (orden-compra (orden-id ?oid) (estado "calculada"))
    ?item <- (item-orden (orden-id ?oid) (item-id ?iid) (qty ?q) (estado "calculado"))
    ?prod <- (producto (item-id ?iid) (modelo ?m) (stock ?s & :(>= ?s ?q)))

@@ -46,7 +46,7 @@
    (producto (item-id p216) (tipo-producto computador) (marca msi) (modelo "Creator Z17 HX") (color gris) (precio 50400) (stock 6))
    (producto (item-id p217) (tipo-producto computador) (marca samsung) (modelo "Galaxy Book3 Ultra") (color grafito) (precio 43200) (stock 10))
    (producto (item-id p218) (tipo-producto computador) (marca acer) (modelo "Predator Triton 17 X") (color negro) (precio 57600) (stock 4))
-   (producto (item-id p202) (tipo-producto computador) (marca lenovo) (modelo "Thinkpad P1 Gen7") (color negro) (precio 75000) (stock 15))
+   (producto (item-id p219) (tipo-producto computador) (marca lenovo) (modelo "Thinkpad P1 Gen7") (color negro) (precio 75000) (stock 15))
    (producto (item-id p220) (tipo-producto computador) (marca huawei) (modelo "MateBook X Pro (2024)") (color azul) (precio 34200) (stock 21))
 
 

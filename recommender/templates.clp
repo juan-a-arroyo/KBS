@@ -10,7 +10,7 @@
   (slot color)
   (slot precio (type NUMBER))
   (slot stock (type INTEGER))
-  (multislot para-modelo)
+  (multislot para-modelo (default NA))
 )
 
 (deftemplate cliente
@@ -36,8 +36,9 @@
 (deftemplate orden-compra
     (slot orden-id)
     (slot cliente-id)
+    (multislot metodo-pago)
     (slot total-compra (default 0.0) (type NUMBER))
-    (slot estado (default "pendiente"))
+    (slot estado (default "procesando"))
 )
 
 (deftemplate item-orden
@@ -45,5 +46,5 @@
     (slot item-id)
     (slot qty (type INTEGER))
     (slot subtotal (default 0.0) (type NUMBER))
-    (slot estado (default "pendiente"))
+    (slot estado (default "procesando"))
 )
