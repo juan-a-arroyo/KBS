@@ -38,7 +38,7 @@
     (slot cliente-id)
     (multislot metodo-pago)
     (slot total-compra (default 0.0) (type NUMBER))
-    (slot estado (default "procesando"))
+    (slot estado (default "pendiente"))
 )
 
 (deftemplate item-orden
@@ -46,5 +46,5 @@
     (slot item-id)
     (slot qty (type INTEGER))
     (slot subtotal (default 0.0) (type NUMBER))
-    (slot estado (default "procesando"))
+    (slot estado (default "pendiente"))
 )
