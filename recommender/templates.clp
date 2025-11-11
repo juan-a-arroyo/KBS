@@ -15,7 +15,7 @@
 
 (deftemplate cliente
   (slot cliente-id)
-  (slot nombre)
+  (slot nombre) ; cambiar a multislot
 )
 
 (deftemplate tarjetacred
